@@ -123,10 +123,10 @@ function ListProducts({ listgames }) {
           <ImgProduct src={`${game.thumbnail}`} alt={game.title} />
           <BoxDescripcion>
             <BoxDescripcionH3>Producto Tres</BoxDescripcionH3>
-            <TxtDescripcion>{game.short_description}</TxtDescripcion>
+            <TxtDescripcion>{game.description}</TxtDescripcion>
             <Genero>{game.genre}</Genero>
-            <Plataforma><span>{game.platform}</span></Plataforma>
-            <Desarrollador>{game.developer}</Desarrollador>
+            <Plataforma><span>{game.category}</span></Plataforma>
+            <Desarrollador>{game.price}</Desarrollador>
             <ButtonEfect />
 
           </BoxDescripcion>

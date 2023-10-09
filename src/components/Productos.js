@@ -37,9 +37,10 @@ function Productod() {
 
     useEffect(() => {
         const fetchListGames = async () => {
-            const response = await fetch('/api/games');
+            const response = await fetch('https://dummyjson.com/products');
             const data = await await response.json(); 
-            setListGame(data);
+            
+            setListGame(data.products);
         };
 
         fetchListGames();
@@ -49,7 +50,7 @@ function Productod() {
     return (
         <MainConten>
          <MainH1>Productos</MainH1>
-         <ListProducts listgames={listgames}  />
+          <ListProducts listgames={listgames}  /> 
       
         </MainConten>
     );
