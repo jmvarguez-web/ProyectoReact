@@ -1,28 +1,30 @@
 import React from "react";
 //import { Link } from "react-router-dom";
 import styled from "styled-components";
+// import devices  from "./helpers/MediaQuery";
+import SectionCardNosotros from "./nosotros/CardNosotros";
+import SectionNosotros from "./nosotros/ContainerNosotros";
+import Categorias from "./home/Categorias";
+import ServiciosNosotros from "./nosotros/ServiciosNosotros";
+
+import ContainerMarcas from "./nosotros/ContainerMarcas";
 
 
-/*main {
-  padding: 2% 5%;
-} */
 const MainConten = styled.main`
 padding: 2% 5%;
 `;
 
-const MainH1 = styled.h1`
-font-family: 'Fjalla One', sans-serif;
-text-align: center;
-`;
-
-
-
 
 function Nosotros() {
     return (
-        <MainConten>
-         <MainH1>Nosotros</MainH1>
-      
+        <MainConten> 
+            <SectionNosotros/>
+            <SectionCardNosotros/>
+            <ServiciosNosotros/>
+            <ContainerMarcas/>
+         
+            <Categorias/>
+            
         </MainConten>
     );
 }

@@ -1,11 +1,11 @@
 import React from "react";
 //import { Link } from "react-router-dom";
 import styled from "styled-components";
-import SeccionProducUno from "./SeccionProduct_1";
-import SeccionProductosDos from "./SeccionProduct_2";
-import SeccionProductosTres from "./SeccionProduct_3";
-import Categorias from "./Categorias";
-import Banner from "./Banner";
+import SeccionProducUno from "./home/SeccionProduct_1";
+import SeccionProductosDos from "./home/SeccionProduct_2";
+import SeccionProductosTres from "./home/SeccionProduct_3";
+import Categorias from "./home/Categorias";
+import Banner from "./home/Banner";
 
 /*main {
   padding: 2% 5%;
