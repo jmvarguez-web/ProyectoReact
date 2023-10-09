@@ -10,7 +10,7 @@ function Disclaimer() {
     return (
   
         <SectionDisclaimer>
-            <p>Todos los derechos reservados. Tienda de Muebles</p>
+            <p>Todos los derechos reservados. Proyecto en react</p>
         </SectionDisclaimer>
     );
 }

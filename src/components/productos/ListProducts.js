@@ -119,7 +119,7 @@ function ListProducts({ listgames }) {
   return (
     <SectionListProducts>
       {listgames.map((game) => (
-        <ProductoArticles key={game.id} lastChild widthBasis100>
+        <ProductoArticles key={game.id} lastChild >
           <ImgProduct src={`${game.thumbnail}`} alt={game.title} />
           <BoxDescripcion>
             <BoxDescripcionH3>Producto Tres</BoxDescripcionH3>
