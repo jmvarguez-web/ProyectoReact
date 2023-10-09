@@ -37,7 +37,7 @@ function Productod() {
 
     useEffect(() => {
         const fetchListGames = async () => {
-            const response = await fetch('https://www.freetogame.com/api/games');
+            const response = await fetch('/api/games');
             const data = await await response.json(); 
             setListGame(data);
         };
