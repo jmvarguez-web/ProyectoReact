@@ -74,7 +74,7 @@ const  ListProducts = () => {
    const [libros, setLibros] = useState( [] )
 
   
-   const URL = 'http://localhost:3010/api/libros'
+   const URL ='https://proyectobackend-production-6540.up.railway.app' //'http://localhost:3010/api/libros'
    const showData = async () => {
    try{
      const response = await fetch(URL)
