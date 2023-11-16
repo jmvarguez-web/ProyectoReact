@@ -8,6 +8,8 @@ import Nosotros from "./components/Nosotros";
 import Calculadora from "./components/Calculadora";
 import Footer from "./components/themplate/Footer";
 import Blog from "./components/Blog";
+import Libros from "./components/Libros";
+import Ubicacion from "./components/Ubicacion";
 function App() {
   return (
     <Router>
@@ -19,7 +21,9 @@ function App() {
         <Route path="/nosotros" element={<Nosotros />}/>
         <Route path="/productos" element={<Productos />}/>
         <Route path="/calculadora" element={<Calculadora />}/>
-         <Route path="/blog" element={<Blog />}/> 
+         <Route path="/blog" element={<Blog />}/>
+         <Route path="/libros" element={<Libros />}/> 
+         <Route path="/ubicacion" element={<Ubicacion />}/>  
       </Routes>
       
       <Footer/>

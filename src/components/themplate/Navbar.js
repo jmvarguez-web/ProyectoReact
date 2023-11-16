@@ -225,6 +225,12 @@ function Navbar() {
             <Navlink >
                 <NavaALink to="/calculadora">Calculadora</NavaALink>
             </Navlink>
+            <Navlink >
+                <NavaALink to="/libros">Libros</NavaALink>
+            </Navlink>
+            <Navlink >
+                <NavaALink to="/ubicacion">Ubicación</NavaALink>
+            </Navlink>
        
 
         </Menu>
