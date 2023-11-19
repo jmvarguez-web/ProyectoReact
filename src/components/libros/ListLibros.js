@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import devices from "../helpers/MediaQuery";
-import DataTable, { createTheme as themetable  } from 'react-data-table-component';
+import DataTable, { createTheme as themetable } from 'react-data-table-component';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -13,12 +13,21 @@ import TextField from '@mui/material/TextField';
 import { ThemeProvider, createTheme as thememui } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
+
+
+import axios from "axios";
+import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
 const darkTheme = thememui({
   palette: {
     mode: 'dark',
   },
 });
-
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const SectionListProducts = styled.section`
 
@@ -49,12 +58,12 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 800,
-  bgcolor:'#000',
+  bgcolor: '#000',
   border: '2px solid #fff',
   boxShadow: 24,
   p: 4,
 };
-themetable( {
+themetable({
   text: {
     primary: '#268bd2',
     secondary: '#2aa198',
@@ -82,18 +91,135 @@ const ListProducts = ({ rowlibros }) => {
 
   const [libros, setLibros] = useState([]);
   const [open, setOpen] = useState(false);
-  const [selectedLibro, setSelectedLibro] = useState(null);
+  const [mostrarBotonNew, setMostrarBotonNew] = useState(true);
+  const [mostrarBotonSave, setMostrarBotonSave] = useState(true);
+  const [mostrarBotonEdit, setMostrarBotonEdit] = useState(true);
+  const [mostrarBotonDelete, setMostrarBotonDelete] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
 
 
+  const [formData, setFormData] = useState({
+    // Inicia el estado con los campos del formulario
+    idlibro: '',
+    isbn: '',
+    titulo: '',
+    autor_id: '',
+    paginas: '',
+    fecha_publicacion: '',
+    anio: '',
+    editorial: '',
+    edicion: '',
+    accion:'list'
+  });
+  const URL = 'https://proyectobackend-production-6540.up.railway.app/api/libros'; //'http://localhost:3010/api/libros'
+  const urlNew='https://proyectobackend-production-6540.up.railway.app/api/libros';
 
-  const handleOpen = (libro) => {
-    setSelectedLibro(libro);
-    setOpen(true);
-  };
-  const handleClose = () => setOpen(false);
-  const URL = 'https://proyectobackend-production-6540.up.railway.app/api/libros' //'http://localhost:3010/api/libros'
 
   
+  // const handleClickAlert = () => {
+  //   setOpenAlert(true);
+  // };
+
+  // const handleCloseAlert = (event, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+
+  //   setOpenAlert(false);
+  // };
+
+  const handleChange = (e) => {
+    // Actualiza el estado cuando se cambia un campo del formulario
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Datos enviados:', formData);
+
+
+   
+    axios.post(urlNew, formData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => {
+        console.log('Respuesta de la API:', response.data);
+       
+      })
+      .catch(error => {
+        console.error('Error al llamar a la API:', error);
+      
+      });
+
+
+
+
+  };
+
+  
+ 
+  const handleNew = () => {
+    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
+   // setFormData(libro);
+   setFormData({
+    idlibro: '',
+    isbn: '',
+    titulo: '',
+    autor_id: '',
+    paginas: '',
+    fecha_publicacion: '',
+    anio: '',
+    editorial: '',
+    edicion: '',
+  });
+   setMostrarBotonNew(false);
+   setMostrarBotonSave(true);
+   setMostrarBotonEdit(false);
+   setMostrarBotonDelete(false);
+   console.log("nuevo");
+    
+  };
+  const handleSave = (libro) => {
+    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
+    //setFormData(libro);
+    console.log(libro);
+    
+  }; 
+  const handleEdit = (libro) => {
+    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
+    //setFormData(libro);
+    console.log("Editar");
+    
+  };
+
+  const handleDelete = (libro) => {
+    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
+    //setFormData(libro);
+    console.log("Libro");
+    
+  };
+
+
+  /**habre la modal del formulario con los datos del libro */
+  const handleOpen = (libro) => {
+    setFormData(libro);
+    setOpenAlert(false);
+    setMostrarBotonNew(true);
+    setMostrarBotonSave(false);
+    setMostrarBotonEdit(true);
+    setMostrarBotonDelete(true);
+    setOpen(true);
+  };
+  /**cierra modal */
+  const handleClose = () => setOpen(false);
+ 
+
+
   const showData = async () => {
     try {
       const response = await fetch(URL)
@@ -114,8 +240,8 @@ const ListProducts = ({ rowlibros }) => {
 
   const columns = [
     {
-     
-      cell: (row) =>  <Button variant="contained" color="success" onClick={() => handleOpen(row)}>ver</Button>,
+
+      cell: (row) => <Button variant="contained" color="success" onClick={() => handleOpen(row)}>ver</Button>,
       ignoreRowClick: true,
       allowOverflow: true,
       button: true,
@@ -162,11 +288,11 @@ const ListProducts = ({ rowlibros }) => {
     selectAllRowsItemText: 'Todos',
   };
 
- 
+
 
   //4 - Mostramos la data en DataTable
   return (
-   <div> <SectionListProducts >
+    <div> <SectionListProducts >
       <DataTable
 
         title="Lista de Libros"
@@ -178,141 +304,159 @@ const ListProducts = ({ rowlibros }) => {
         highlightOnHover
         pointerOnHover
       />
-    
+
     </SectionListProducts>
-    
-    <Modal
+    {/* <Snackbar open={open} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+          This is a success message!
+        </Alert>
+      </Snackbar> */}
+      <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       ><React.StrictMode>
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h4" >
-          {selectedLibro ? "Libro "+ selectedLibro.titulo : ''}
-          </Typography>
-        
-          <ThemeProvider theme={darkTheme}>
-          <CssBaseline />
-          
-      <Typography variant="h6" >
-    
-      </Typography>
-      <Grid container spacing={3}  >
-        <Grid item xs={12} sm={6}>
-        <TextField
-            id="idlibro"
-            name="idlibro"
-            label="Clave"
-            fullWidth
-              variant="filled"
-            value={selectedLibro ? selectedLibro.idlibro : ''}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            id="isbn"
-            name="isbn"
-            label="ISBN"
-            fullWidth
-            value={selectedLibro ? selectedLibro.isbn : ''}
-              variant="filled"
-            InputProps={{ xs: { backgroundColor: 'white' } }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            id="titulo"
-            name="titulo"
-            label="Titulo"
-            fullWidth
-            value={selectedLibro ? selectedLibro.titulo : ''}
-              variant="filled"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="autor_id"
-            name="autor_id"
-            label="Autor"
-            fullWidth
-            value={selectedLibro ? selectedLibro.autor_id : ''}
-            autoComplete="shipping address-line2"
-              variant="filled"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            id="paginas"
-            name="paginas"
-            label="Paginas"
-            fullWidth
-            value={selectedLibro ? selectedLibro.paginas : ''}
-              variant="filled"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            id="fecha_publicacion"
-            name="fecha_publicacion"
-            label="Fecha de publicación"
-            fullWidth
-            value={selectedLibro ? selectedLibro.fecha_publicacion : ''}
-              variant="filled"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
+          <Box sx={style}>
+            <form onSubmit={handleSubmit}>
+            <Typography id="modal-modal-title" variant="h4" >
+           
+            </Typography>
 
-            id="anio"
-            name="anio"
-            label="Año"
-            fullWidth
-            value={selectedLibro ? selectedLibro.anio : ''}
-            autoComplete="shipping postal-code"
-              variant="filled"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
+            <ThemeProvider theme={darkTheme}>
+              <CssBaseline />
+             
+              <Typography variant="h6" >
 
-            id="editorial"
-            name="editorial"
-            label="Editorial"
-            fullWidth
-            value={selectedLibro ? selectedLibro.editorial : ''}
-              variant="filled"
-          />
-        </Grid>
-     
-      </Grid> <Grid container spacing={4}>
-  <Grid item xs={3}>
-  <Button variant="outlined" color="primary" justifyContent="center" alignItems="center"  sx={{ marginTop: '30px' }}> 
-              Editar
-            </Button>
-  </Grid>
-  <Grid item xs={3}>
-  <Button variant="outlined" color="primary" justifyContent="center" alignItems="center"  sx={{ marginTop: '30px' }}> 
-              Guardar
-            </Button>
-  </Grid>
-  <Grid item xs={3}>
-  <Button variant="outlined" color="primary" justifyContent="center" alignItems="center" sx={{ marginTop: '30px' }} > 
-              Eliminae
-            </Button>
-  </Grid>
-  <Grid item xs={3}>
-  <Button variant="outlined" color="primary" justifyContent="center" alignItems="center" sx={{ marginTop: '30px' }} > 
-              Cancelar
-            </Button>
-  </Grid>
-</Grid></ThemeProvider>
-        </Box>
-      
+              </Typography>
+              <Grid container spacing={3}  >
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="idlibro"
+                    name="idlibro"
+                    label="Clave"
+                    fullWidth
+                    variant="filled"
+                    value={formData ? formData.idlibro : ''}
+                    onChange={handleChange}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="isbn"
+                    name="isbn"
+                    label="ISBN"
+                    fullWidth
+                    value={formData ? formData.isbn : ''}
+                    onChange={handleChange}
+                  
+                    
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    id="titulo"
+                    name="titulo"
+                    label="Titulo"
+                    fullWidth
+                    value={formData ? formData.titulo : ''}
+                    onChange={handleChange}
+                   
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id="autor_id"
+                    name="autor_id"
+                    label="Autor"
+                    fullWidth
+                    value={formData ? formData.autor_id : ''}
+                    onChange={handleChange}
+                    variant="filled"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="paginas"
+                    name="paginas"
+                    label="Paginas"
+                    fullWidth
+                    value={formData ? formData.paginas : ''}
+                    onChange={handleChange}
+                    variant="filled"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="fecha_publicacion"
+                    name="fecha_publicacion"
+                    label="Fecha de publicación"
+                    fullWidth
+                    value={formData ? formData.fecha_publicacion : ''}
+                    onChange={handleChange}
+                    variant="filled"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+
+                    id="anio"
+                    name="anio"
+                    label="Año"
+                    fullWidth
+                    value={formData ? formData.anio : ''}
+                    onChange={handleChange}
+                    autoComplete="shipping postal-code"
+                    variant="filled"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+
+                    id="editorial"
+                    name="editorial"
+                    label="Editorial"
+                    fullWidth
+                    value={formData ? formData.editorial : ''}
+                    onChange={handleChange}
+                    variant="filled"
+                  />
+                </Grid>
+                
+              </Grid> <Grid container spacing={4}>
+                <Grid item xs={3}>
+                {mostrarBotonSave && (
+                <Button type="submit" disabled={!mostrarBotonSave}  variant="outlined" color="primary"  sx={{ marginTop: '30px' }}>
+                    GUARDAR
+                  </Button>)}
+                  {mostrarBotonNew && (
+                   <Button disabled={!mostrarBotonNew}  onClick={handleNew}  variant="outlined" color="primary"  sx={{ marginTop: '30px' }}>
+                    Nuevo
+                  </Button> )}
+                </Grid>
+                <Grid item xs={3}>
+                  <Button disabled={!mostrarBotonEdit}  onClick={() => handleEdit(formData)}  variant="outlined" color="primary"  sx={{ marginTop: '30px' }}>
+                    Editar
+                  </Button>
+                </Grid>
+                <Grid   item xs={3}>
+                  <Button disabled={!mostrarBotonDelete}  onClick={() => handleDelete(formData)} variant="outlined" color="primary"  sx={{ marginTop: '30px' }} >
+                    Eliminar
+                  </Button>
+                </Grid>
+                <Grid item xs={3}>
+                  <Button   variant="outlined"  onClick={handleClose} color="primary"  sx={{ marginTop: '30px' }} >
+                    Cancelar
+                  </Button>
+                </Grid>
+              </Grid></ThemeProvider>
+              </form>
+          </Box>
+
         </React.StrictMode>
       </Modal>
     </div>
