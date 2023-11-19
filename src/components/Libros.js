@@ -13,22 +13,6 @@ text-align: center;
 `;
 
 
-/* const [listgame, setListgame] = useState([]);
-
-
-    
-
-    useEffect(() => {
-        const fetchListgames = async () => {
-            const response = await axios.get(API_URL);
-            const data = await response.json();
-            setListgame(data.results);
-
-            console.log(data.results);
-        };
-
-        fetchListgames();
-    }, []); */
 
 function Productod() {
 
