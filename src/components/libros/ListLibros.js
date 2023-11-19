@@ -101,11 +101,7 @@ const ListProducts = ({ rowlibros }) => {
   const [openAlertError, setOpenAlertError] = React.useState(false);
   const [MensajeAccion, setMensajeAccion] = React.useState('');
 
-  const [formDataBusqueda, setFormDataBusqueda] = useState({
-    // Inicia el estado con los campos del formulario
-    idlibro: '',
-    palabra: '',
-  });
+ 
   const [formData, setFormData] = useState({
     // Inicia el estado con los campos del formulario
     idlibro: '',
