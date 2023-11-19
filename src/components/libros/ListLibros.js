@@ -16,9 +16,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 
 import axios from "axios";
-import Stack from '@mui/material/Stack';
+// import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+
+
 
 const darkTheme = thememui({
   palette: {
@@ -95,9 +97,15 @@ const ListProducts = ({ rowlibros }) => {
   const [mostrarBotonSave, setMostrarBotonSave] = useState(true);
   const [mostrarBotonEdit, setMostrarBotonEdit] = useState(true);
   const [mostrarBotonDelete, setMostrarBotonDelete] = useState(true);
-  const [openAlert, setOpenAlert] = useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const [openAlertError, setOpenAlertError] = React.useState(false);
+  const [MensajeAccion, setMensajeAccion] = React.useState('');
 
-
+  const [formDataBusqueda, setFormDataBusqueda] = useState({
+    // Inicia el estado con los campos del formulario
+    idlibro: '',
+    palabra: '',
+  });
   const [formData, setFormData] = useState({
     // Inicia el estado con los campos del formulario
     idlibro: '',
@@ -109,24 +117,38 @@ const ListProducts = ({ rowlibros }) => {
     anio: '',
     editorial: '',
     edicion: '',
-    accion:'list'
+    accion: 'list'
   });
-  const URL = 'https://proyectobackend-production-6540.up.railway.app/api/libros'; //'http://localhost:3010/api/libros'
-  const urlNew='https://proyectobackend-production-6540.up.railway.app/api/libros';
+  const URL = 'https://proyectobackend-production-6540.up.railway.app/api/libros';
 
 
-  
+
+
   // const handleClickAlert = () => {
   //   setOpenAlert(true);
   // };
 
-  // const handleCloseAlert = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
-  //   setOpenAlert(false);
+    setOpenAlert(false);
+  };
+
+
+
+  // const handleClickAlertError = () => {
+  //   setOpenAlertError(true);
   // };
+
+  const handleCloseAlertError = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenAlertError(false);
+  };
 
   const handleChange = (e) => {
     // Actualiza el estado cuando se cambia un campo del formulario
@@ -138,22 +160,31 @@ const ListProducts = ({ rowlibros }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Datos enviados:', formData);
+
+    /**
+     *
+     * insertar nuevo registro
+     *
+     */
 
 
-   
-    axios.post(urlNew, formData, {
+    axios.post(URL, formData, {
       headers: {
         'Content-Type': 'application/json',
       },
     })
       .then(response => {
-        console.log('Respuesta de la API:', response.data);
-       
+        setOpenAlertError(false);
+        setOpenAlert(true);
+        setMensajeAccion('Se ha registrado un nuevo libro con clave: ' + response.data.id);
+        handleNew();
+        showData();
       })
       .catch(error => {
-        console.error('Error al llamar a la API:', error);
-      
+        setMensajeAccion(error.response.data.message);
+        setOpenAlert(false);
+        setOpenAlertError(true);
+
       });
 
 
@@ -161,47 +192,98 @@ const ListProducts = ({ rowlibros }) => {
 
   };
 
-  
- 
+
+
   const handleNew = () => {
-    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
-   // setFormData(libro);
-   setFormData({
-    idlibro: '',
-    isbn: '',
-    titulo: '',
-    autor_id: '',
-    paginas: '',
-    fecha_publicacion: '',
-    anio: '',
-    editorial: '',
-    edicion: '',
-  });
-   setMostrarBotonNew(false);
-   setMostrarBotonSave(true);
-   setMostrarBotonEdit(false);
-   setMostrarBotonDelete(false);
-   console.log("nuevo");
-    
+
+    setOpenAlertError(false);
+
+    setFormData({
+      idlibro: '',
+      isbn: '',
+      titulo: '',
+      autor_id: '',
+      paginas: '',
+      fecha_publicacion: '',
+      anio: '',
+      editorial: '',
+      edicion: '',
+    });
+    setMostrarBotonNew(false);
+    setMostrarBotonSave(true);
+    setMostrarBotonEdit(false);
+    setMostrarBotonDelete(false);
+    console.log("nuevo");
+
   };
-  const handleSave = (libro) => {
-    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
-    //setFormData(libro);
-    console.log(libro);
-    
-  }; 
+
   const handleEdit = (libro) => {
-    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
-    //setFormData(libro);
-    console.log("Editar");
-    
+
+    /**
+     *
+     * Editar libro seleccionado
+     *
+     */
+
+
+    axios.patch(URL + `/${formData.idlibro}`, formData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => {
+        setOpenAlertError(false);
+        setOpenAlert(true);
+        console.log(response.data);
+        setMensajeAccion('Se ha editado el libro con clave: ' + response.data.idlibro);
+        showData();
+      })
+      .catch(error => {
+        setMensajeAccion(error.response.data.message);
+        setOpenAlert(false);
+        setOpenAlertError(true);
+
+      });
+
+
   };
 
   const handleDelete = (libro) => {
-    // Cuando se hace clic en el botón de editar, llena el formulario con los datos del usuario
-    //setFormData(libro);
-    console.log("Libro");
-    
+   
+   /**
+    *
+    * Eliminar registro
+    *
+    */
+   
+   axios.delete(URL + `/${formData.idlibro}`, formData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(response => {
+      setOpenAlertError(false);
+     
+      if(response.status===204){
+        setOpenAlert(true);
+        setMensajeAccion('Se ha Eliminado el libro con clave: ',formData.idlibro );
+        handleNew();
+      }else{
+        setOpenAlertError(true);
+        setMensajeAccion('No se pudo Eliminar el libro con clave: ',formData.idlibro );
+      }
+      
+      showData();
+    })
+    .catch(error => {
+      setMensajeAccion(error.response.data.message);
+      setOpenAlert(false);
+      setOpenAlertError(true);
+
+    });
+
+   
+
   };
 
 
@@ -217,14 +299,13 @@ const ListProducts = ({ rowlibros }) => {
   };
   /**cierra modal */
   const handleClose = () => setOpen(false);
- 
+
 
 
   const showData = async () => {
     try {
       const response = await fetch(URL)
       const data = await response.json()
-      console.log(data)
       setLibros(data)
     } catch (error) {
       console.error('Error al realizar la solicitud:', error);
@@ -306,155 +387,166 @@ const ListProducts = ({ rowlibros }) => {
       />
 
     </SectionListProducts>
-    {/* <Snackbar open={open} autoHideDuration={6000} onClose={handleCloseAlert}>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openAlert} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
-          This is a success message!
+          {MensajeAccion}
         </Alert>
-      </Snackbar> */}
+      </Snackbar>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openAlertError} onClose={handleCloseAlertError}>
+        <Alert onClose={handleCloseAlertError} severity="error" sx={{ width: '100%' }}>
+          {MensajeAccion}
+        </Alert>
+      </Snackbar>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={() => {
+          handleClose();
+          handleCloseAlert();
+          handleCloseAlertError();
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-      ><React.StrictMode>
+      >
+
+        <React.StrictMode>
           <Box sx={style}>
             <form onSubmit={handleSubmit}>
-            <Typography id="modal-modal-title" variant="h4" >
-           
-            </Typography>
-
-            <ThemeProvider theme={darkTheme}>
-              <CssBaseline />
-             
-              <Typography variant="h6" >
+              <Typography id="modal-modal-title" variant="h4" >
 
               </Typography>
-              <Grid container spacing={3}  >
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id="idlibro"
-                    name="idlibro"
-                    label="Clave"
-                    fullWidth
-                    variant="filled"
-                    value={formData ? formData.idlibro : ''}
-                    onChange={handleChange}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id="isbn"
-                    name="isbn"
-                    label="ISBN"
-                    fullWidth
-                    value={formData ? formData.isbn : ''}
-                    onChange={handleChange}
-                  
-                    
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    id="titulo"
-                    name="titulo"
-                    label="Titulo"
-                    fullWidth
-                    value={formData ? formData.titulo : ''}
-                    onChange={handleChange}
-                   
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    id="autor_id"
-                    name="autor_id"
-                    label="Autor"
-                    fullWidth
-                    value={formData ? formData.autor_id : ''}
-                    onChange={handleChange}
-                    variant="filled"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id="paginas"
-                    name="paginas"
-                    label="Paginas"
-                    fullWidth
-                    value={formData ? formData.paginas : ''}
-                    onChange={handleChange}
-                    variant="filled"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id="fecha_publicacion"
-                    name="fecha_publicacion"
-                    label="Fecha de publicación"
-                    fullWidth
-                    value={formData ? formData.fecha_publicacion : ''}
-                    onChange={handleChange}
-                    variant="filled"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
 
-                    id="anio"
-                    name="anio"
-                    label="Año"
-                    fullWidth
-                    value={formData ? formData.anio : ''}
-                    onChange={handleChange}
-                    autoComplete="shipping postal-code"
-                    variant="filled"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
+              <ThemeProvider theme={darkTheme}>
+                <CssBaseline />
 
-                    id="editorial"
-                    name="editorial"
-                    label="Editorial"
-                    fullWidth
-                    value={formData ? formData.editorial : ''}
-                    onChange={handleChange}
-                    variant="filled"
-                  />
-                </Grid>
-                
-              </Grid> <Grid container spacing={4}>
-                <Grid item xs={3}>
-                {mostrarBotonSave && (
-                <Button type="submit" disabled={!mostrarBotonSave}  variant="outlined" color="primary"  sx={{ marginTop: '30px' }}>
-                    GUARDAR
-                  </Button>)}
-                  {mostrarBotonNew && (
-                   <Button disabled={!mostrarBotonNew}  onClick={handleNew}  variant="outlined" color="primary"  sx={{ marginTop: '30px' }}>
-                    Nuevo
-                  </Button> )}
-                </Grid>
-                <Grid item xs={3}>
-                  <Button disabled={!mostrarBotonEdit}  onClick={() => handleEdit(formData)}  variant="outlined" color="primary"  sx={{ marginTop: '30px' }}>
-                    Editar
-                  </Button>
-                </Grid>
-                <Grid   item xs={3}>
-                  <Button disabled={!mostrarBotonDelete}  onClick={() => handleDelete(formData)} variant="outlined" color="primary"  sx={{ marginTop: '30px' }} >
-                    Eliminar
-                  </Button>
-                </Grid>
-                <Grid item xs={3}>
-                  <Button   variant="outlined"  onClick={handleClose} color="primary"  sx={{ marginTop: '30px' }} >
-                    Cancelar
-                  </Button>
-                </Grid>
-              </Grid></ThemeProvider>
-              </form>
+                <Typography variant="h6" >
+
+                </Typography>
+                <Grid container spacing={3}  >
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      id="idlibro"
+                      name="idlibro"
+                      label="Clave"
+                      fullWidth
+                      variant="filled"
+                      value={formData ? formData.idlibro : ''}
+                      onChange={handleChange}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      id="isbn"
+                      name="isbn"
+                      label="ISBN"
+                      fullWidth
+                      value={formData ? formData.isbn : ''}
+                      onChange={handleChange}
+
+
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      id="titulo"
+                      name="titulo"
+                      label="Titulo"
+                      fullWidth
+                      value={formData ? formData.titulo : ''}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="autor_id"
+                      name="autor_id"
+                      label="Autor"
+                      fullWidth
+                      value={formData ? formData.autor_id : ''}
+                      onChange={handleChange}
+                      variant="filled"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      id="paginas"
+                      name="paginas"
+                      label="Paginas"
+                      fullWidth
+                      value={formData ? formData.paginas : ''}
+                      onChange={handleChange}
+                      variant="filled"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+
+                    <TextField
+                      id="fecha_publicacion"
+                      name="fecha_publicacion"
+                      label="Fecha de publicación  DD/MM/AAAA"
+                      fullWidth
+                      value={formData ? formData.fecha_publicacion : ''}
+                      onChange={handleChange}
+                      variant="filled"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+
+                      id="anio"
+                      name="anio"
+                      label="Año"
+                      fullWidth
+                      value={formData ? formData.anio : ''}
+                      onChange={handleChange}
+                      autoComplete="shipping postal-code"
+                      variant="filled"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+
+                      id="editorial"
+                      name="editorial"
+                      label="Editorial"
+                      fullWidth
+                      value={formData ? formData.editorial : ''}
+                      onChange={handleChange}
+                      variant="filled"
+                    />
+                  </Grid>
+
+                </Grid> <Grid container spacing={4}>
+                  <Grid item xs={3}>
+                    {mostrarBotonSave && (
+                      <Button type="submit" disabled={!mostrarBotonSave} variant="outlined" color="primary" sx={{ marginTop: '30px' }}>
+                        GUARDAR
+                      </Button>)}
+                    {mostrarBotonNew && (
+                      <Button disabled={!mostrarBotonNew} onClick={handleNew} variant="outlined" color="primary" sx={{ marginTop: '30px' }}>
+                        Nuevo
+                      </Button>)}
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Button disabled={!mostrarBotonEdit} onClick={() => handleEdit(formData)} variant="outlined" color="primary" sx={{ marginTop: '30px' }}>
+                      Editar
+                    </Button>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Button disabled={!mostrarBotonDelete} onClick={() => handleDelete(formData)} variant="outlined" color="primary" sx={{ marginTop: '30px' }} >
+                      Eliminar
+                    </Button>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Button variant="outlined" onClick={handleClose} color="primary" sx={{ marginTop: '30px' }} >
+                      Cancelar
+                    </Button>
+                  </Grid>
+                </Grid></ThemeProvider>
+            </form>
           </Box>
 
         </React.StrictMode>
